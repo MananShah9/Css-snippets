@@ -1,1 +1,1 @@
-# Css-snippets
+radial-gradient( circle farthest-corner at 10% 20%,rgba(0,221,214,1) 0%, rgba(51,102,255,1) 90% );
