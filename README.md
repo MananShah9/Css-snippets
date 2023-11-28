@@ -1,25 +1,36 @@
-To achieve this, you can use Qlik Sense Proxy Service (QPS) to configure virtual proxies for the additional domain (pqr.com) and redirect traffic to the service running on port 9000. Follow these general steps:
+Yes, you can achieve this without changing the port number visible in the URL by using a reverse proxy. Here's a simplified guide:
 
-1. **Open Qlik Management Console (QMC):** Access the QMC interface.
+1. **Install a Reverse Proxy:**
+   Install a reverse proxy server on your Windows server. A popular choice is Nginx, but you can also use tools like Apache or even built-in solutions like IIS (Internet Information Services) with URL Rewrite.
 
-2. **Navigate to Proxies:**
-   - Go to "Proxies" in the QMC.
-   - Click on "Advanced" to access more settings.
+2. **Configure Reverse Proxy:**
+   Set up the reverse proxy to forward requests from port 80 to your Node.js application running on port 3456. Here's an example Nginx configuration:
 
-3. **Create a Virtual Proxy:**
-   - Create a new virtual proxy for the additional domain (pqr.com).
-   - Set the "Prefix" to the appropriate path you want for your service.
+   ```nginx
+   server {
+       listen 80;
+       server_name yourdomain.com;
 
-4. **Configure Load Balancing:**
-   - Under the virtual proxy settings, configure load balancing rules to redirect traffic.
-   - Set the "Internal Virtual Proxy" to the virtual proxy created for abc.com.
-   - Set the "Internal Path" to the service running on port 9000.
+       location / {
+           proxy_pass http://127.0.0.1:3456;
+           proxy_http_version 1.1;
+           proxy_set_header Upgrade $http_upgrade;
+           proxy_set_header Connection 'upgrade';
+           proxy_set_header Host $host;
+           proxy_cache_bypass $http_upgrade;
+       }
+   }
+   ```
 
-5. **Update DNS and Network Settings:**
-   - Make sure that the DNS for pqr.com is configured to point to the Qlik Sense server.
-   - Adjust network settings to allow traffic on the desired port (9000).
+   Update the `server_name` directive with your actual domain.
 
-6. **Test:**
-   - Test accessing the service via pqr.com to ensure that traffic is redirected to the service running on port 9000.
+3. **Update DNS Records:**
+   Ensure that your domain's 'A' record still points to the public IP address of your Windows server.
 
-Remember, this is a high-level overview, and you may need to refer to Qlik Sense documentation for more specific details based on your version and configuration.
+4. **Restart Reverse Proxy:**
+   Restart your reverse proxy server to apply the configuration changes.
+
+5. **Test:**
+   Verify that you can access your Node.js website using your domain name without specifying the port (e.g., http://yourdomain.com).
+
+By using a reverse proxy, you can keep your Node.js application running on port 3456 internally while allowing external users to access it on the standard HTTP port 80.
