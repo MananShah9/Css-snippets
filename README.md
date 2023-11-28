@@ -1,33 +1,25 @@
-Certainly! You can use the `psutil` library to check the storage usage and `os` library to check the folder size in Python. Here's an example code:
+To achieve this, you can use Qlik Sense Proxy Service (QPS) to configure virtual proxies for the additional domain (pqr.com) and redirect traffic to the service running on port 9000. Follow these general steps:
 
-```python
-import psutil
-import os
-import requests
+1. **Open Qlik Management Console (QMC):** Access the QMC interface.
 
-def check_c_drive_storage():
-    c_drive = psutil.disk_usage('/')
-    available_space_gb = c_drive.free / (2**30)  # Convert bytes to gigabytes
+2. **Navigate to Proxies:**
+   - Go to "Proxies" in the QMC.
+   - Click on "Advanced" to access more settings.
 
-    if available_space_gb < 20:
-        # Make a call to the first REST API
-        response = requests.get('your_first_rest_api_url')
-        # Handle the response as needed
+3. **Create a Virtual Proxy:**
+   - Create a new virtual proxy for the additional domain (pqr.com).
+   - Set the "Prefix" to the appropriate path you want for your service.
 
-def check_folder_file_size(folder_path):
-    for root, dirs, files in os.walk(folder_path):
-        for file in files:
-            file_path = os.path.join(root, file)
-            file_size_mb = os.path.getsize(file_path) / (2**20)  # Convert bytes to megabytes
+4. **Configure Load Balancing:**
+   - Under the virtual proxy settings, configure load balancing rules to redirect traffic.
+   - Set the "Internal Virtual Proxy" to the virtual proxy created for abc.com.
+   - Set the "Internal Path" to the service running on port 9000.
 
-            if file_size_mb > 60:
-                # Make a call to the second REST API
-                response = requests.get('your_second_rest_api_url')
-                # Handle the response as needed
+5. **Update DNS and Network Settings:**
+   - Make sure that the DNS for pqr.com is configured to point to the Qlik Sense server.
+   - Adjust network settings to allow traffic on the desired port (9000).
 
-# Example usage:
-check_c_drive_storage()
-check_folder_file_size('/path/to/your/folder')
-```
+6. **Test:**
+   - Test accessing the service via pqr.com to ensure that traffic is redirected to the service running on port 9000.
 
-Make sure to replace `'your_first_rest_api_url'` and `'your_second_rest_api_url'` with the actual URLs of your REST APIs. Additionally, replace `'/path/to/your/folder'` with the path to the folder you want to monitor.
+Remember, this is a high-level overview, and you may need to refer to Qlik Sense documentation for more specific details based on your version and configuration.
