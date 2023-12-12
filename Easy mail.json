@@ -1,0 +1,16 @@
+{
+  "services": [
+    {
+      "serviceName": "marketingService",
+      "users": ["john.doe@example.com", "jane.smith@example.com"]
+    },
+    {
+      "serviceName": "salesService",
+      "users": ["sales1@example.com", "sales2@example.com"]
+    },
+    {
+      "serviceName": "supportService",
+      "users": ["support1@example.com", "support2@example.com"]
+    }
+  ]
+}
