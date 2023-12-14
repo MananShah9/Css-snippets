@@ -1,0 +1,24 @@
+ALTER TABLE your_table_name
+ADD COLUMN ytd_total_changes integer,
+ADD COLUMN ytd_disruptive_changes integer,
+ADD COLUMN ytd_dfc integer;
+
+for index, row in df.iterrows():
+  gbgf = row['gbgf']
+  sl = row['sl']
+  month_year = row['month_year']
+  total_changes = row['total_changes']
+  disruptive_changes = row['disruptive_changes']
+  dfc = row['dfc']
+  updated_on = row['updated_on']
+  ytd_total_changes = row['ytd_total_changes']
+  ytd_disruptive_changes = row['ytd_disruptive_changes']
+  ytd_dfc = row['ytd_dfc']
+  query = f"""
+    UPDATE your_table_name
+    SET ytd_total_changes = {ytd_total_changes},
+        ytd_disruptive_changes = {ytd_disruptive_changes},
+        ytd_dfc = {ytd_dfc}
+    WHERE gbgf = '{gbgf}' AND sl = {sl} AND month_year = '{month_year}';
+  """
+  # Execute the query using your preferred database connector
