@@ -1,0 +1,19 @@
+---
+- name: Deploy Node.js App Update
+  hosts: your_windows_server
+  tasks:
+    - name: Copy app files to server
+      win_copy:
+        src: /path/to/your/app
+        dest: C:\path\to\your\app
+      become: yes
+
+    - name: Install npm dependencies
+      win_shell: npm install
+      args:
+        chdir: C:\path\to\your\app
+      become: yes
+
+    - name: Restart PM2 process
+      win_shell: pm2 restart your_app_name
+      become: yes
