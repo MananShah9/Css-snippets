@@ -1,39 +1,71 @@
-To download the filtered data in Excel format, you can use a library like `xlsx` to convert the data into an Excel sheet. First, install the library:
-
-```bash
-npm install xlsx
-```
-
-Then, modify the `handleDownload` function in your React component:
+Certainly! To add a sort button next to each column name, you can create a sorting mechanism for each column. Here's an updated code snippet that includes sort buttons for each column:
 
 ```jsx
-import XLSX from 'xlsx';
-
 // ... (previous code)
 
 const App = () => {
   // ... (previous code)
 
-  const handleDownload = () => {
-    const worksheet = XLSX.utils.json_to_sheet(filteredData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Filtered Data');
-    const excelBlob = XLSX.write(workbook, { bookType: 'xlsx', type: 'blob' });
+  const [sortColumn, setSortColumn] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
 
-    const url = URL.createObjectURL(excelBlob);
-
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'filtered_data.xlsx';
-    document.body.appendChild(a);
-    a.click();
-
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleSort = (columnName) => {
+    setSortColumn(columnName);
+    setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
   };
 
-  // ... (remaining code)
+  const sortedData = useMemo(() => {
+    if (sortColumn) {
+      const orderMultiplier = sortOrder === 'asc' ? 1 : -1;
+      return [...filteredData].sort((a, b) => {
+        if (a[sortColumn] < b[sortColumn]) return -1 * orderMultiplier;
+        if (a[sortColumn] > b[sortColumn]) return 1 * orderMultiplier;
+        return 0;
+      });
+    }
+    return filteredData;
+  }, [filteredData, sortColumn, sortOrder]);
+
+  return (
+    <div>
+      {/* ... (previous code) */}
+
+      <table className="table">
+        <thead>
+          <tr>
+            {Object.keys(filteredData[0] || {}).map((column) => (
+              <th key={column}>
+                {column}
+                <input
+                  type="text"
+                  placeholder={`Filter ${column}`}
+                  value={columnFilters[column] || ''}
+                  onChange={(e) => handleColumnFilter(column, e.target.value)}
+                />
+                <button onClick={() => handleColumnFilter(column, '')}>Clear</button>
+                <button onClick={() => handleSort(column)}>Sort</button>
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {sortedData.map((item, index) => (
+            <tr key={index}>
+              {Object.keys(item).map((column) => (
+                <td key={column}>{item[column]}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <button onClick={applyColumnFilters}>Apply Filters</button>
+      <button onClick={() => handleDownload(sortedData)}>Download Filtered Data</button>
+    </div>
+  );
 };
+
+export default App;
 ```
 
-This code uses the `xlsx` library to create an Excel sheet from the filtered data and then downloads it as an Excel file when the "Download Filtered Data" button is clicked. Adjust the filename (`'filtered_data.xlsx'`) as needed.
+In this modification, a "Sort" button is added next to each column name. Clicking the "Sort" button will toggle the sorting order (ascending or descending) for the corresponding column. The data is then displayed in the table based on the selected sorting. Adjust the button's appearance and behavior according to your design preferences.
