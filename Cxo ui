@@ -1,71 +1,20 @@
-Certainly! To add a sort button next to each column name, you can create a sorting mechanism for each column. Here's an updated code snippet that includes sort buttons for each column:
+// Your array of JSON objects
+const jsonData = [
+  { id: 3, name: 'Alice' },
+  { id: 1, name: 'Bob' },
+  { id: 2, name: 'Charlie' },
+];
 
-```jsx
-// ... (previous code)
-
-const App = () => {
-  // ... (previous code)
-
-  const [sortColumn, setSortColumn] = useState(null);
-  const [sortOrder, setSortOrder] = useState('asc');
-
-  const handleSort = (columnName) => {
-    setSortColumn(columnName);
-    setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+// Function to sort the array by a specific key
+const sortByKey = (key) => {
+  return (a, b) => {
+    if (a[key] < b[key]) return -1;
+    if (a[key] > b[key]) return 1;
+    return 0;
   };
-
-  const sortedData = useMemo(() => {
-    if (sortColumn) {
-      const orderMultiplier = sortOrder === 'asc' ? 1 : -1;
-      return [...filteredData].sort((a, b) => {
-        if (a[sortColumn] < b[sortColumn]) return -1 * orderMultiplier;
-        if (a[sortColumn] > b[sortColumn]) return 1 * orderMultiplier;
-        return 0;
-      });
-    }
-    return filteredData;
-  }, [filteredData, sortColumn, sortOrder]);
-
-  return (
-    <div>
-      {/* ... (previous code) */}
-
-      <table className="table">
-        <thead>
-          <tr>
-            {Object.keys(filteredData[0] || {}).map((column) => (
-              <th key={column}>
-                {column}
-                <input
-                  type="text"
-                  placeholder={`Filter ${column}`}
-                  value={columnFilters[column] || ''}
-                  onChange={(e) => handleColumnFilter(column, e.target.value)}
-                />
-                <button onClick={() => handleColumnFilter(column, '')}>Clear</button>
-                <button onClick={() => handleSort(column)}>Sort</button>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {sortedData.map((item, index) => (
-            <tr key={index}>
-              {Object.keys(item).map((column) => (
-                <td key={column}>{item[column]}</td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <button onClick={applyColumnFilters}>Apply Filters</button>
-      <button onClick={() => handleDownload(sortedData)}>Download Filtered Data</button>
-    </div>
-  );
 };
 
-export default App;
-```
+// Sort the array by the 'id' key (ascending order)
+const sortedData = jsonData.sort(sortByKey('id'));
 
-In this modification, a "Sort" button is added next to each column name. Clicking the "Sort" button will toggle the sorting order (ascending or descending) for the corresponding column. The data is then displayed in the table based on the selected sorting. Adjust the button's appearance and behavior according to your design preferences.
+console.log(sortedData);
