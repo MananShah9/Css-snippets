@@ -1,19 +1,30 @@
-Certainly! To implement downloading the filtered data, you can use the `Blob` and `URL.createObjectURL` to create a downloadable file. Here's an example implementation:
+To download the filtered data in Excel format, you can use a library like `xlsx` to convert the data into an Excel sheet. First, install the library:
+
+```bash
+npm install xlsx
+```
+
+Then, modify the `handleDownload` function in your React component:
 
 ```jsx
+import XLSX from 'xlsx';
+
 // ... (previous code)
 
 const App = () => {
   // ... (previous code)
 
   const handleDownload = () => {
-    const jsonContent = JSON.stringify(filteredData, null, 2);
-    const blob = new Blob([jsonContent], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+    const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Filtered Data');
+    const excelBlob = XLSX.write(workbook, { bookType: 'xlsx', type: 'blob' });
+
+    const url = URL.createObjectURL(excelBlob);
 
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'filtered_data.json';
+    a.download = 'filtered_data.xlsx';
     document.body.appendChild(a);
     a.click();
 
@@ -21,16 +32,8 @@ const App = () => {
     URL.revokeObjectURL(url);
   };
 
-  return (
-    <div>
-      {/* ... (previous code) */}
-
-      <button onClick={handleDownload}>Download Filtered Data</button>
-    </div>
-  );
+  // ... (remaining code)
 };
-
-export default App;
 ```
 
-This implementation converts the filtered data array into a formatted JSON string, creates a Blob from it, and then generates a download link for the user. When the user clicks the "Download Filtered Data" button, it triggers the download of a JSON file containing the filtered data. Adjust the filename (`'filtered_data.json'`) and file type (`'application/json'`) as needed.
+This code uses the `xlsx` library to create an Excel sheet from the filtered data and then downloads it as an Excel file when the "Download Filtered Data" button is clicked. Adjust the filename (`'filtered_data.xlsx'`) as needed.
