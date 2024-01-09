@@ -1,0 +1,98 @@
+Certainly! Here's a basic outline for a React app using Vite, Axios, Bootstrap 5, and functionality to fetch data from API endpoints, display it in a table, and allow filtering with a download button:
+
+1. Install Vite and create a new project:
+
+```bash
+npm create vite my-react-app --template react
+cd my-react-app
+npm install axios bootstrap@5
+```
+
+2. Replace the content of `src/App.jsx` with the following code:
+
+```jsx
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+const API_ENDPOINTS = ['https://api.example.com/endpoint1', 'https://api.example.com/endpoint2'];
+
+const App = () => {
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [filterValue, setFilterValue] = useState('');
+
+  useEffect(() => {
+    fetchData(API_ENDPOINTS[0]); // Initial fetch, you can change the index as needed
+  }, []);
+
+  const fetchData = async (endpoint) => {
+    try {
+      const response = await axios.get(endpoint);
+      setData(response.data);
+      setFilteredData(response.data); // Initial data set for filtering
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const handleFilter = (column) => {
+    const filtered = data.filter((item) =>
+      item[column].toLowerCase().includes(filterValue.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
+
+  const handleDownload = () => {
+    // Implement download logic with filteredData
+    console.log('Downloading filtered data:', filteredData);
+  };
+
+  return (
+    <div>
+      <select onChange={(e) => fetchData(e.target.value)}>
+        {API_ENDPOINTS.map((endpoint, index) => (
+          <option key={index} value={endpoint}>
+            Endpoint {index + 1}
+          </option>
+        ))}
+      </select>
+
+      <input
+        type="text"
+        placeholder="Filter..."
+        value={filterValue}
+        onChange={(e) => setFilterValue(e.target.value)}
+      />
+
+      <button onClick={() => handleFilter('columnName')}>Filter</button>
+
+      <table className="table">
+        <thead>
+          <tr>
+            {/* Add table headers dynamically based on your data */}
+            <th>Column 1</th>
+            <th>Column 2</th>
+            {/* Add more headers as needed */}
+          </tr>
+        </thead>
+        <tbody>
+          {filteredData.map((item, index) => (
+            <tr key={index}>
+              <td>{item.column1}</td>
+              <td>{item.column2}</td>
+              {/* Add more columns as needed */}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <button onClick={handleDownload}>Download Filtered Data</button>
+    </div>
+  );
+};
+
+export default App;
+```
+
+Replace the API endpoint URLs, column names, and customize the table headers and columns according to your API response structure.
